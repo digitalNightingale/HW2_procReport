@@ -6,8 +6,8 @@ To run this kernel:
   
   make
   
-  sudo insmod ./proc_report.ko
+  sudo insmod ./procReport.ko
   
   dmesg
   
-  sudo rmmod ./proc_report.ko
+  sudo rmmod ./procReport.ko
