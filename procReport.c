@@ -61,7 +61,7 @@ void printProcesses(struct task_struct *parentTask) {     // source: https://lin
  * @return 0  upon success
  */
 int proc_init (void) {
-    printk(KERN_INFO "proc_report: kernel module initialized\n");
+    printk(KERN_INFO "procReport: kernel module initialized\n");
     printk(KERN_INFO "PROCESS REPORTER\n");
     getRunables(&init_task);
     printk(KERN_INFO "Unrunnable:%d\nRunnable:%d\nStopped:%d\n", unrun, run, stop);
@@ -73,7 +73,7 @@ int proc_init (void) {
  * This function is called when the module is removed.
  */
 void proc_cleanup(void) {
-    printk(KERN_INFO "proc_report: performing cleanup of module\n");
+    printk(KERN_INFO "procReport: performing cleanup of module\n");
 }
 
 // Macros for registering module entry and exit points.
