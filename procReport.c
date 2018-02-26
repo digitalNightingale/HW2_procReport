@@ -2,6 +2,8 @@
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/init.h>
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
 
 int unrun = 0;
 int run = 0;
@@ -55,12 +57,31 @@ void printProcesses(struct task_struct *parentTask) {     // source: https://lin
     //}
 }
 
+static int proc_report_show(struct seq_file *m, void *v) {
+    seq_printf(m, "P5 : Hello proc!\n");
+    return 0;
+}
+
+static int proc_report_open(struct inode *inode, struct  file *file) {
+    return single_open(file, proc_report_show, NULL);
+}
+
+static const struct file_operations proc_report_fops = {
+    .owner = THIS_MODULE,
+    .open = proc_report_open,
+    .read = seq_read,
+    .llseek = seq_lseek,
+    .release = single_release,
+};
+
 /**
  * This function is called when the module is loaded.
  *
  * @return 0  upon success
  */
 int proc_init (void) {
+	proc_create("proc_report", 0, NULL, &proc_report_fops);
+	printk("Proc Report Created.\n");
     printk(KERN_INFO "procReport: kernel module initialized\n");
     printk(KERN_INFO "PROCESS REPORTER\n");
     getRunables(&init_task);
@@ -73,6 +94,7 @@ int proc_init (void) {
  * This function is called when the module is removed.
  */
 void proc_cleanup(void) {
+	remove_proc_entry("proc_report", NULL);
     printk(KERN_INFO "procReport: performing cleanup of module\n");
 }
 
