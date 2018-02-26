@@ -27,7 +27,7 @@ void getRunables(struct task_struct *currentTask) {    // https://notes.shichao.
     }
 }
 
-void printProcesses(struct task_struct *parentTask) {     // source: https://linuxgazette.net/133/saha.html
+void printProcesses(struct seq_file *m, struct task_struct *parentTask) {     // source: https://linuxgazette.net/133/saha.html
 
     struct task_struct *childTask;
     struct list_head *childList;
@@ -43,22 +43,34 @@ void printProcesses(struct task_struct *parentTask) {     // source: https://lin
         // if there are no children processes print no children
         if (children == 0) {
             printk(KERN_INFO "Process ID=%d Name=%s *No Children", parentTask->pid, parentTask->comm);
+seq_printf(m, "Process ID=%d Name=%s *No Children", parentTask->pid, parentTask->comm);
         // else print out the number of children and the first child process
         } else {
             childTask = list_first_entry(childList, struct task_struct, sibling);
             printk("Process ID=%d Name=%s number_of_children=%d first_child_pid=%d first_child_name=%s", parentTask->pid, parentTask->comm, children, childTask->pid, childTask->comm);
+seq_printf(m, "Process ID=%d Name=%s number_of_children=%d first_child_pid=%d first_child_name=%s", parentTask->pid, parentTask->comm, children, childTask->pid, childTask->comm);
         }
         // recursivly go through the parent list to find each parent/child combo
         list_for_each(childList, &parentTask->children) {
             childTask = list_entry(childList, struct task_struct, sibling);
-            printProcesses(childTask);
+            printProcesses(m, childTask);
         }
         // printk(KERN_INFO "Process ID=%d Name=%s number_of_children=*not coded* **_child_pid=*not coded* **_child_name=*not coded*\n", parentTask->pid, parentTask->comm);
     //}
 }
 
 static int proc_report_show(struct seq_file *m, void *v) {
-    seq_printf(m, "P5 : Hello proc!\n");
+
+    printk(KERN_INFO "PROCESS REPORTER\n");
+    seq_printf(m, "PROCESS REPORTER\n");
+
+    getRunables(&init_task);
+
+    printk(KERN_INFO "Unrunnable:%d\nRunnable:%d\nStopped:%d\n", unrun, run, stop);
+    seq_printf(m, "Unrunnable:%d\nRunnable:%d\nStopped:%d\n", unrun, run, stop);
+
+    printProcesses(m, &init_task);
+
     return 0;
 }
 
@@ -80,13 +92,17 @@ static const struct file_operations proc_report_fops = {
  * @return 0  upon success
  */
 int proc_init (void) {
-	proc_create("proc_report", 0, NULL, &proc_report_fops);
-	printk("Proc Report Created.\n");
+    
     printk(KERN_INFO "procReport: kernel module initialized\n");
-    printk(KERN_INFO "PROCESS REPORTER\n");
-    getRunables(&init_task);
-    printk(KERN_INFO "Unrunnable:%d\nRunnable:%d\nStopped:%d\n", unrun, run, stop);
-    printProcesses(&init_task);
+
+	proc_create("proc_report", 0, NULL, &proc_report_fops);
+	printk("proc_report Created.\n");
+
+//     printk(KERN_INFO "PROCESS REPORTER\n");
+//     getRunables(&init_task);
+//     printk(KERN_INFO "Unrunnable:%d\nRunnable:%d\nStopped:%d\n", unrun, run, stop);
+//     seq_printf(m, "Unrunnable:%d\nRunnable:%d\nStopped:%d\n", unrun, run, stop);
+//     printProcesses(&init_task);
     return 0;
 }
 
