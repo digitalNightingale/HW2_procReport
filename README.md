@@ -8,6 +8,14 @@ To run this kernel:
   
   sudo insmod ./procReport.ko
   
-  dmesg
+  // for printk print out
   
-  sudo rmmod ./procReport.ko
+    dmesg
+  
+  // for proc report print out
+  
+    cat /proc/proc_report
+  
+  // to remove kernel
+  
+    sudo rmmod ./procReport.ko
