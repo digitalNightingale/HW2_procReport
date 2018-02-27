@@ -2,20 +2,20 @@
 
 To run this kernel:
 
-  cd HW2_procReport
+    cd HW2_procReport
   
-  make
+    make
   
-  sudo insmod ./procReport.ko
+    sudo insmod ./procReport.ko
   
-  // for printk print out
+  For printk print out:
   
     dmesg
   
-  // for proc report print out
+  For proc report print out:
   
     cat /proc/proc_report
   
-  // to remove kernel
+  To remove kernel:
   
     sudo rmmod ./procReport.ko
